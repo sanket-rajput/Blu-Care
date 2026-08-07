@@ -28,3 +28,7 @@ cryptography==42.0.8
 
 # --- Utilities ---
 python-dotenv==1.0.1
+
+# --- Database & Persistence ---
+SQLAlchemy==2.0.25
+psycopg2-binary==2.9.9

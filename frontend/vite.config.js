@@ -7,4 +7,19 @@ import path from 'path'
 export default defineConfig({
   envDir: path.resolve(__dirname, '..'),
   plugins: [react(), tailwindcss()],
+  build: {
+    target: 'es2020',
+    sourcemap: false,
+    chunkSizeWarningLimit: 1000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router-dom'],
+          'vendor-clerk': ['@clerk/clerk-react'],
+          'vendor-ui': ['lucide-react', 'gsap', '@gsap/react'],
+        },
+      },
+    },
+  },
 })
+

@@ -7,6 +7,7 @@ from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings
 from app.core.logging import setup_logging, CorrelationIdMiddleware
+from app.core.database import init_db
 from app.rag.store import warm_up
 from app.api.v1.router import api_v1_router
 from app.schemas.api import (
@@ -25,10 +26,11 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application startup and graceful shutdown lifespan manager."""
-    logger.info("Starting up BluCare+ Backend: warming up RAG store (Qdrant + Embeddings + Reranker)...")
+    logger.info("Starting up BluCare+ Backend: warming up RAG store & Database...")
     try:
+        init_db()
         warm_up()
-        logger.info("RAG Store warm-up complete. Service ready.")
+        logger.info("RAG Store & Database initialization complete. Service ready.")
     except Exception as e:
         logger.warning(f"RAG store warm-up warning (running in degraded mode): {e}")
 
@@ -100,12 +102,14 @@ async def legacy_send_message(req: ChatMessageRequest):
 # 6. Deep Health & Readiness Probes
 @app.get("/health", tags=["Health Probes"])
 @app.get("/health/live", tags=["Health Probes"])
+@app.get("/api/v1/health", tags=["Health Probes"])
 async def health_check():
     """Liveness probe confirming API service responsiveness."""
     return {"status": "healthy", "service": "BluCare-Backend", "version": "1.0.0"}
 
 
 @app.get("/health/ready", tags=["Health Probes"])
+@app.get("/api/v1/health/ready", tags=["Health Probes"])
 async def readiness_check():
     """Readiness probe checking Qdrant and environment configuration."""
     qdrant_ok = bool(settings.qdrant_url)

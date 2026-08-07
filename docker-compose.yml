@@ -10,12 +10,19 @@ services:
     volumes:
       - redis_data:/data
     command: redis-server --appendonly yes
-    restart: unless-stopped
+    restart: always
+    networks:
+      - blucare_network
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # Qdrant Vector Database
   qdrant:
@@ -25,12 +32,19 @@ services:
       - "6333:6333"
     volumes:
       - qdrant_storage:/qdrant/storage
-    restart: unless-stopped
+    restart: always
+    networks:
+      - blucare_network
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:6333/healthz"]
       interval: 10s
       timeout: 5s
       retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
 
   # FastAPI Agentic Backend Service
   backend:
@@ -51,7 +65,14 @@ services:
         condition: service_healthy
       qdrant:
         condition: service_healthy
-    restart: unless-stopped
+    restart: always
+    networks:
+      - blucare_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "20m"
+        max-file: "5"
 
   # React / Vite Frontend Service
   frontend:
@@ -64,9 +85,22 @@ services:
     env_file:
       - .env
     depends_on:
-      - backend
-    restart: unless-stopped
+      backend:
+        condition: service_healthy
+    restart: always
+    networks:
+      - blucare_network
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  blucare_network:
+    driver: bridge
 
 volumes:
   redis_data:
   qdrant_storage:
+

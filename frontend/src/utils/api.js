@@ -44,9 +44,11 @@ export async function request(endpoint, options = {}) {
     throw new ApiError('No internet connection. Please check your network and try again.', 0);
   }
 
-  // Ensure /api/v1 prefix
+  // Ensure /api/v1 prefix unless calling root system health endpoints
   const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
-  const path = cleanEndpoint.startsWith('/api/v1') ? cleanEndpoint : `/api/v1${cleanEndpoint}`;
+  const path = cleanEndpoint.startsWith('/api/v1') || cleanEndpoint.startsWith('/health')
+    ? cleanEndpoint
+    : `/api/v1${cleanEndpoint}`;
   const url = `${getApiBaseUrl()}${path}`;
 
   let attempt = 0;
