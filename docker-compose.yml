@@ -77,8 +77,10 @@ services:
   # React / Vite Frontend Service
   frontend:
     build:
-      context: .
-      dockerfile: frontend/Dockerfile
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_CLERK_PUBLISHABLE_KEY: ${VITE_CLERK_PUBLISHABLE_KEY}
     container_name: blucare_frontend
     ports:
       - "80:80"

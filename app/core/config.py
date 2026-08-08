@@ -55,7 +55,7 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 60
 
     # Clerk Authentication
-    clerk_issuer_url: str | None = "https://clerk.accepted.catfish-84.clerk.accounts.dev"
+    clerk_issuer_url: str | None = "https://clerk.blucare.live"
     clerk_jwks_url: str | None = None
 
     # Supabase (Optional DB integration)

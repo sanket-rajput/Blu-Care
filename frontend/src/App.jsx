@@ -28,9 +28,11 @@ import { ToastProvider } from './contexts/ToastContext';
 gsap.registerPlugin(ScrollTrigger, SplitText);
 
 // Retrieve Publishable Key from environment
-const PUBLISHABLE_KEY =
-  import.meta.env.VITE_CLERK_PUBLISHABLE_KEY ||
-  'pk_test_Y2xlcmsuYWNjZXB0ZWQuY2F0ZmlzaC04NC5jbGVyay5hY2NvdW50cy5kZXYk';
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing VITE_CLERK_PUBLISHABLE_KEY environment variable.');
+}
 
 const App = () => {
   return (
